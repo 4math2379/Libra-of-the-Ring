@@ -37,11 +37,36 @@ import 0x0.Block;
         cost: u64,
         aura: u64
     }
-    public generateSerial(SerialLimit: u64) : u64 {
+	public generateSerial(SerialLimit: u64) : u64 {
         let SerialNum: u64;
         RingNum = Math.myrand(Block.get_current_height()) % (copy(SerialLimit) - copy(SerialLimit) / 10) + copy(SerialLimit) / 10;
         return move(RingNum);
     }
+	public cultures_ring (SerialNum: u64) : u64 * u64 {
+	let culture : u64;
+	
+	//extract of the culture as a serial
+	culture = ((move(SerialNum) / 10) % 10) % 5;
+	if (copy(culture)) == 0) {
+		return 6, 6;
+
+		}
+	if (copy(culture)) == 1) {
+		return 8, 3;
+		
+		}
+	if (copy(culture) == 2) {
+            return 3, 8;
+        }
+        if (copy(culture) == 3) {
+            return 7, 4;
+        } else {
+            return 4, 7;
+   		
+		}	  
+
+	}	
+		
 
 }
 
