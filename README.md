@@ -25,10 +25,8 @@ TODO : Sending an event message.
 
 A **Ring** are a *module* and *scripts* that will be attached to a Libra address.
 
-
-
-
-
+23 April: *ForfeRings* principal Module.
+*Contract.move* is the main script of each modules.
 
 
 
