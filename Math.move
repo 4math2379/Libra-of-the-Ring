@@ -2,7 +2,8 @@
 
 
 Math { public power(x: u64, n: u64 ) : u64 {            	if (copy(n) == 0) {            
-return 1;        }        
+return 1;        } 
+       
 	if (copy(n) == 1) {            
 return move(x);        }        
 	if (copy(n) % 2 == 0) {            

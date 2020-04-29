@@ -42,11 +42,11 @@ RingNum = Math.myrand(Block.get_current_height()) % (copy(SerialLimit) - copy(Se
 
         //extract of the culture as a serial
         culture = ((move(SerialNum) / 10) % 10) % 5;
-        if (copy(culture)) == 0) {
+        if (copy(culture) == 0) {
                 return 6, 6;
 
                 }
-        if (copy(culture)) == 1) {
+        if (copy(culture) == 1) {
                 return 8, 3;
 
                 }
@@ -69,8 +69,8 @@ RingNum = Math.myrand(Block.get_current_height()) % (copy(SerialLimit) - copy(Se
         a, b = Self.culture_motiv(copy(_SerialNum));
         //initialized the new ring struct
         return Ring {
-                name:move(_name);
-                SerialNum: copy(_SerialNum);
+                name:move(_name),
+                SerialNum: copy(_SerialNum),
                 level :1,
                 cost : move(a),
                 aura : move(b)
@@ -87,14 +87,19 @@ public destroyRing (ring: Self.Ring){
         let cost : u64;
         let aura : u64;
 
-        Ring(name, SerialNum, level, cost, aura ) =move(ring);
-return
+        Ring{name, SerialNum, level, cost, aura} =move(ring);
+return;
 }
 
 	public initRingstats () {
 	
-	assert(get_txn_sender() -- 0x0000000, 1);
+	assert(get_txn_sender() == 0x0000000000000000000000000a550c18, 1);
+	move_to_sender<RingStats>(RingStats {sum: 0});
+	return;
+
 }
+
+
 
 
 

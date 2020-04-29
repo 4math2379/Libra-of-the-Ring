@@ -4,7 +4,7 @@ import Transaction.Math;
 main(name: bytearray) {
 let SerialDigits: u64;
 let SerialLimit: u64;
-let RingNum; u64;
+let RingNum: u64;
 // serial = blockNumber
 
 
