@@ -25,33 +25,47 @@ module Math {
 }
 
 
-module ForgeRing {
+module ForgeRing  {
 //made the adequat struct
 import Transaction.Math;
 import 0x0.Block;
    
  resource Ring { 
         name: bytearray,
-        RingNum: u64,
+        ringNum: u64,
         level: u64,
         cost: u64,
         aura: u64
     }
+
+	resource Ringstats {
+	stats: u64
+
+
+	}
+
+
 	public generateSerial(SerialLimit: u64) : u64 {
         let SerialNum: u64;
+	
+	//serial number of rings are ...
         RingNum = Math.myrand(Block.get_current_height()) % (copy(SerialLimit) - copy(SerialLimit) / 10) + copy(SerialLimit) / 10;
         return move(RingNum);
     }
+
+
+
+
 	public cultures_ring (SerialNum: u64) : u64 * u64 {
 	let culture : u64;
 	
 	//extract of the culture as a serial
 	culture = ((move(SerialNum) / 10) % 10) % 5;
-	if (copy(culture)) == 0) {
+	if (copy(culture) == 0) {
 		return 6, 6;
 
 		}
-	if (copy(culture)) == 1) {
+	if (copy(culture) == 1) {
 		return 8, 3;
 		
 		}
@@ -96,49 +110,125 @@ public destroyRing (ring: Self.Ring){
 return 
 }
 
+	public initRingstats () {
 
+        assert(get_txn_sender() == 0x0000000000000000000000000a550c18, 1);
+        
+	move_to_sender<RingStats>(RingStats {sum: 0});        
+	return;
 
 	
 	
 	}
+
+
+	public ringstats() : u64 acquire RingStats {
+	let RingStats_ref : &mut Self.Ringstats;
+	RingStats_ref = borrow_global_mut<RingStats>(0x0000000000000000000000000a550c18);
+	
+
+
+	//dereference after borrow the resources
+	return *&move(RingStats_ref).sum;
+	
+	}
+
+
+
+
+}
+
+
+
 //create account for ring user
 
 module RingAccount {
+	//import module event
+	import 0x0.Event;
+
+
 	//procedure for create account	
-resource RingAccount {
-	a : u64;
+	resource RingAccount {
+	new_ring : ForgeRing.Ring
+	account_events: Event.Handle<Self.AccountEvent>	
+
 	}
+
+	struct AccountEvent {
+        flag: u64 
+    }
+
 	
 
-	public newAccount () : self.RingAccount {
+	public newAccount (name:bytearray) : self.RingAccount {
 	
+		let SerialDigit : u64;
+		let SerialLimit: u64;
+		let RingNum: u64;
+		let ring : ForgeRing.Ring;
+		
+
+		let event_handle: Event.Handle<Self.AccountEvent>;
+        event_handle = Event.new_event_handle<Self.AccountEvent>();
+
+		
+		SerialDigits = 8;
+		SerialLimit = Math.pow(10, copy(SerialDigits));
+		RingNum = ForgeRing.generateSerial(copy(SerialLimit));
+
+		//init the rings specs
+		ring = ForgeRing.newRings(move(name), move(SerialNum));
+		return RingAccount { new_ring: move(ring), , account_events: move(event_handle)};		
+
 	}		
 
+	
+	public publishAccount (account: Self.RingAccount) acquires RingAccount
 
-	return RingAccount {a :0};
+{
+	let account_event: Self.AccountEvent;
+       let account_add: address;
+       let account_ref: &mut Self.CastleAccount;        
+       account_add = get_txn_sender();
+       account_ref = borrow_global_mut<RingAccount>(copy(account_add));
+       account_event = AccountEvent { flag: 1 };
+        
+Event.emit_event<Self.AccountEvent>(&mut move(account_ref).account_events, move(account_event));	
+
+
+
+
+
+	move_to_sender<RingAccount>move(account);
+ 			                                                                                                                               return;
+
+
+	}
+
+	
+	
 }
 
 
 
-public destroyAccout (account: Self.RingAccount){
-	let num: u64;
-	RingAccount { num } = move(account);
-	returm;
-
-
-}
 
 
 
 script:
 import Transaction.ForgeRing;
 import Transaction.Math;
-
+import Transaction.RingAccount;
 main(name: bytearray) {
 let SerialDigits: u64;
 let SerialLimit: u64;
 let RingNum; u64;
 // serial = blockNumber
+
+//account
+let account: RingAccount.RingAccount;
+account =  RingAccount.newAccount(move(name));
+RingAccount.publishAccount(move(account));
+
 
 
 //declaratiom the new ring specs
